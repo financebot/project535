@@ -1,0 +1,61 @@
+cat << 'EOF' > f2_main_final_drag.html
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: #222; overflow: hidden; height: 100vh; margin: 0; }
+        .rect {
+            position: absolute;
+            width: 150px;
+            height: 100px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border: 3px solid #000;
+            user-select: none;
+        }
+        #rect1 { background: red; top: 50px; left: 50px; }
+        #rect2 { background: blue; top: 100px; left: 100px; }
+    </style>
+</head>
+<body>
+
+<div id="rect1" class="rect">Z: 1</div>
+<div id="rect2" class="rect">Z: 2</div>
+
+<script>
+    let activeElement = null;
+    let offset = { x: 0, y: 0 };
+    let topZ = 2;
+
+    document.querySelectorAll('.rect').forEach(el => {
+        el.onmousedown = (e) => {
+            activeElement = el;
+            // Porta in primo piano
+            topZ++;
+            el.style.zIndex = topZ;
+            el.innerText = "Z: " + topZ;
+            el.style.cursor = "grabbing";
+            
+            offset.x = e.clientX - el.offsetLeft;
+            offset.y = e.clientY - el.offsetTop;
+        };
+    });
+
+    document.onmousemove = (e) => {
+        if (!activeElement) return;
+        activeElement.style.left = (e.clientX - offset.x) + "px";
+        activeElement.style.top = (e.clientY - offset.y) + "px";
+    };
+
+    document.onmouseup = () => {
+        if (activeElement) activeElement.style.cursor = "grab";
+        activeElement = null;
+    };
+</script>
+</body>
+</html>
+EOF

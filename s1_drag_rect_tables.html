@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Draggable Tables</title>
+    <style>
+        body { background: #222; overflow: hidden; height: 100vh; margin: 0; font-family: sans-serif; }
+        .rect {
+            position: absolute;
+            background: #fff;
+            border: 3px solid #000;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #444;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+        }
+        table { border-collapse: collapse; width: 100%; background: #eee; }
+        td, th { border: 1px solid #aaa; padding: 15px; text-align: center; color: #000; }
+        #rect1 { top: 50px; left: 50px; z-index: 1; }
+        #rect2 { top: 150px; left: 300px; z-index: 2; }
+    </style>
+</head>
+<body>
+
+<div id="rect1" class="rect">
+    <div class="header">Tabella 1 (Z: 1)</div>
+    <table>
+        <tr><th>Dato A</th><th>Dato B</th></tr>
+        <tr><td>10</td><td>20</td></tr>
+    </table>
+</div>
+
+<div id="rect2" class="rect">
+    <div class="header">Tabella 2 (Z: 2)</div>
+    <table>
+        <tr><th>Dato C</th><th>Dato D</th></tr>
+        <tr><td>30</td><td>40</td></tr>
+    </table>
+</div>
+
+<script>
+    let activeElement = null;
+    let offset = { x: 0, y: 0 };
+    let topZ = 2;
+
+    document.querySelectorAll('.rect').forEach(el => {
+        el.onmousedown = (e) => {
+            activeElement = el;
+            topZ++;
+            el.style.zIndex = topZ;
+            el.querySelector('.header').innerText = `Tabella (Z: ${topZ})`;
+            el.style.cursor = "grabbing";
+            
+            let rect = el.getBoundingClientRect();
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+        };
+    });
+
+    document.onmousemove = (e) => {
+        if (!activeElement) return;
+        activeElement.style.left = (e.clientX - offset.x) + "px";
+        activeElement.style.top = (e.clientY - offset.y) + "px";
+    };
+
+    document.onmouseup = () => {
+        if (activeElement) activeElement.style.cursor = "grab";
+        activeElement = null;
+    };
+    
+    console.log("File f2_main_drag_rect_tables.html prodotto ed eseguito nel browser.");
+</script>
+</body>
+</html>
